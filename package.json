@@ -16,7 +16,7 @@
     "generate:types": "node scripts/generate-types.js",
     "sync:types": "node scripts/sync-types.js",
     "types": "npm run generate:types && npm run sync:types",
-    "postinstall": "npm run generate:types"
+    "postinstall": "npm run generate:types && npm rebuild @swc/core"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.33.0",
