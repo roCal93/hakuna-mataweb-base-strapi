@@ -42,6 +42,9 @@ ALLOWED_ORIGINS=https://votre-frontend.com,https://www.votre-frontend.com
 Astuce (si erreur SWC lors du build) :
 
 - Ajoutez aussi `NIXPACKS_NODE_VERSION=20` dans les variables Railway
+- Assurez-vous que les dépendances optionnelles NPM ne sont pas omises (SWC)
+	- Option 1 : ajoutez `NPM_CONFIG_OPTIONAL=true` dans Railway
+	- Option 2 : gardez `optional=true` dans `.npmrc` (déjà configuré dans ce template)
 - Ou commitez un fichier `.nvmrc` avec `20` (déjà présent dans ce template)
 - Relancez un déploiement en vidant le cache (`Redeploy → Clear build cache`)
 
