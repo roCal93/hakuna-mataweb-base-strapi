@@ -16,11 +16,11 @@ export default ({ env }) => {
   // Configuration PostgreSQL pour Railway
   const connection = env('DATABASE_URL')
     ? {
-        // Railway fournit DATABASE_URL
+        // Railway fournit DATABASE_URL avec SSL activé
         connectionString: env('DATABASE_URL'),
-        ssl: {
-          rejectUnauthorized: env.bool('DATABASE_SSL_SELF', false),
-        },
+        ssl: env('NODE_ENV') === 'production'
+          ? { rejectUnauthorized: false } // SSL requis en production
+          : false,
       }
     : {
         // Configuration manuelle

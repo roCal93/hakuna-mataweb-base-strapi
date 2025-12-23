@@ -33,6 +33,9 @@ API_TOKEN_SALT=votre-secret
 ADMIN_JWT_SECRET=votre-secret
 TRANSFER_TOKEN_SALT=votre-secret
 JWT_SECRET=votre-secret
+
+# CORS - Domaines autorisés (séparés par des virgules)
+ALLOWED_ORIGINS=https://votre-frontend.com,https://www.votre-frontend.com
 ```
 
 ### 4. Déploiement automatique
@@ -52,7 +55,7 @@ Admin : `https://votre-projet.up.railway.app/admin`
 
 - ⚠️ Changez **tous** les secrets par défaut
 - ✅ Activez SSL sur la base de données en production
-- ✅ Configurez CORS dans `config/middlewares.ts`
+- ✅ CORS configuré dans [config/middlewares.ts](config/middlewares.ts) - Ajoutez `ALLOWED_ORIGINS` dans Railway
 
 ## 📦 Scripts disponibles
 
