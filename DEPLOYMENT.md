@@ -38,6 +38,12 @@ JWT_SECRET=votre-secret
 ALLOWED_ORIGINS=https://votre-frontend.com,https://www.votre-frontend.com
 ```
 
+Astuce (si erreur SWC lors du build) :
+
+- Ajoutez aussi `NIXPACKS_NODE_VERSION=20` dans les variables Railway
+- Ou commitez un fichier `.nvmrc` avec `20` (déjà présent dans ce template)
+- Relancez un déploiement en vidant le cache (`Redeploy → Clear build cache`)
+
 ### 4. Déploiement automatique
 
 Railway va :
