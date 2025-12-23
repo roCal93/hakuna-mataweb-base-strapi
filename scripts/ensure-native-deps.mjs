@@ -16,22 +16,42 @@ if (process.platform !== 'linux') {
 
 const arch = process.arch;
 
+function isMusl() {
+    try {
+        const report = process.report?.getReport?.();
+        const glibc = report?.header?.glibcVersionRuntime;
+        return !glibc;
+    } catch {
+        return false;
+    }
+}
+
+const musl = isMusl();
+
 // Map to the most common native packages used by Strapi's admin tooling.
 // Rollup:
 const rollupPackage =
     arch === 'x64'
-        ? '@rollup/rollup-linux-x64-gnu'
+        ? (musl ? '@rollup/rollup-linux-x64-musl' : '@rollup/rollup-linux-x64-gnu')
         : arch === 'arm64'
-            ? '@rollup/rollup-linux-arm64-gnu'
+            ? (musl ? '@rollup/rollup-linux-arm64-musl' : '@rollup/rollup-linux-arm64-gnu')
             : null;
 
 // SWC:
 const swcPackage =
     arch === 'x64'
-        ? '@swc/core-linux-x64-gnu'
+        ? (musl ? '@swc/core-linux-x64-musl' : '@swc/core-linux-x64-gnu')
         : arch === 'arm64'
-            ? '@swc/core-linux-arm64-gnu'
+            ? (musl ? '@swc/core-linux-arm64-musl' : '@swc/core-linux-arm64-gnu')
             : null;
+
+function getInstalledVersion(pkgName) {
+    try {
+        return require(`${pkgName}/package.json`).version;
+    } catch {
+        return null;
+    }
+}
 
 function isModulePresent(pkgName) {
     if (!pkgName) return true;
@@ -69,3 +89,38 @@ execSync('npm install --include=optional --no-audit --no-fund', {
         NPM_CONFIG_OPTIONAL: 'true',
     },
 });
+
+const stillMissing = [];
+if (!isModulePresent(rollupPackage) && !isPackageDirPresent(rollupPackage)) stillMissing.push(rollupPackage);
+if (!isModulePresent(swcPackage) && !isPackageDirPresent(swcPackage)) stillMissing.push(swcPackage);
+
+if (stillMissing.length === 0) {
+    process.exit(0);
+}
+
+// npm can sometimes keep optional deps missing in CI/container environments.
+// If that happens, install the required platform packages explicitly.
+const rollupVersion = getInstalledVersion('rollup');
+const swcCoreVersion = getInstalledVersion('@swc/core');
+
+for (const pkgName of stillMissing) {
+    const version = pkgName.startsWith('@rollup/') ? rollupVersion : swcCoreVersion;
+    const spec = version ? `${pkgName}@${version}` : pkgName;
+    console.log(`[ensure-native-deps] Forcing install: ${spec}`);
+    execSync(`npm install --no-save --no-package-lock --no-audit --no-fund ${spec}`, {
+        stdio: 'inherit',
+        env: {
+            ...process.env,
+            NPM_CONFIG_OPTIONAL: 'true',
+        },
+    });
+}
+
+const finalMissing = [];
+if (!isModulePresent(rollupPackage) && !isPackageDirPresent(rollupPackage)) finalMissing.push(rollupPackage);
+if (!isModulePresent(swcPackage) && !isPackageDirPresent(swcPackage)) finalMissing.push(swcPackage);
+
+if (finalMissing.length > 0) {
+    console.error(`[ensure-native-deps] Still missing after repair: ${finalMissing.join(', ')}`);
+    process.exit(1);
+}
