@@ -48,6 +48,10 @@ Astuce (si erreur SWC lors du build) :
 - Ou commitez un fichier `.nvmrc` avec `20` (déjà présent dans ce template)
 - Relancez un déploiement en vidant le cache (`Redeploy → Clear build cache`)
 
+Note : certaines configurations Railway/Railpack peuvent réutiliser un cache d'installation (`npm ci cached`).
+Si vous voyez une erreur du type `Cannot find module @rollup/rollup-linux-x64-gnu` ou `Failed to load native binding`,
+le template déclenche maintenant un contrôle automatique avant `npm run build` pour réinstaller les dépendances optionnelles si nécessaire.
+
 ### 4. Déploiement automatique
 
 Railway va :
