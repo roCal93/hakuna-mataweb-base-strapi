@@ -5,6 +5,7 @@
 - Compte GitHub
 - Compte Railway (gratuit)
 - Code poussé sur GitHub
+- Node 20.x (`nvm use` lit le `.nvmrc`)
 
 ## 🚀 Étapes de déploiement
 
